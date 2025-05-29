@@ -8,3 +8,7 @@ version = "0.1.0"
 dependencies = [
     "shotgun-api3 @ git+https://github.com/shotgunsoftware/python-api@v3.6.2"
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
