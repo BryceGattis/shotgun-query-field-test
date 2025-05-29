@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shotgun-query-field-test"
+version = "0.1.0"
+dependencies = [
+    "shotgun-api3 @ git+https://github.com/shotgunsoftware/python-api@v3.6.2"
+]
