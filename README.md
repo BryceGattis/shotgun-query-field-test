@@ -16,8 +16,15 @@ Windows: venv/Scripts/activate.bat
 MacOS/Linux: source venv/bin/activate
 ```
 
-Lastly, we will install this package (and its dependencies) to the virtual environment:
+Next, we will install this package (and its dependencies) to the virtual environment:
 
 ```commandline
 python -m pip install .
 ```
+
+Lastly, we need to ensure that our IDE is aware of the virtual environment and can use it for
+auto-complete, type-hinting etc.
+
+In Pycharm, in the top menu, go to File->Settings which will open a new pop-up window. In the pop-up
+window, go to Project->Python Interpreter and change the configuration to use your newly created
+virtual environment.
