@@ -168,3 +168,6 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Environment variable json
+env_vars.json
