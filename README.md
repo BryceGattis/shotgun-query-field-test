@@ -1,6 +1,21 @@
 # shotgun-query-field-test
 A test to obtain the value of query fields in Shotgun/ShotGrid/Flow and display the result in a HTML table.
 
+## Using the library
+
+## Dependencies
+
+This package uses the Python package [Keyring](https://pypi.org/project/keyring/).
+Therefore, prior to using the library, you must first set up the following credentials in your system's keyring service:
+
+```commandline
+shotgun.api.url - The URL to the Shotgun site.
+shotgun.api.script_name - The API script's name.
+shotgun.api.api_key - The API script's API Key.
+```
+
+Otherwise, you will get an EnvironmentError when the program initially attempts to create a SG connection.
+
 ## Development
 
 ### Dependencies
