@@ -5,3 +5,14 @@ import shotgun_api3
 def test_sg_instance_created():
     sg = shotgun_query_field_test.main.get_shotgun_instance()
     assert isinstance(sg, shotgun_api3.Shotgun)
+
+
+def test_get_query_field_value_average():
+    qf_value = shotgun_query_field_test.main.get_query_field_value('Sequence', 'sg_cut_duration', 40)
+    assert qf_value == 1
+
+
+def test_get_query_field_value_record_count():
+    qf_value = shotgun_query_field_test.main.get_query_field_value('Sequence', 'sg_ip_versions', 40)
+    assert qf_value == 1
+
