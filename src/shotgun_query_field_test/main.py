@@ -1,21 +1,20 @@
 import functools
-import os
+import getpass
 
 import shotgun_api3
 
+from shotgun_query_field_test.credentials import get_credential_from_keyring_or_error
+
+
 @functools.lru_cache()
 def get_shotgun_instance() -> shotgun_api3.Shotgun:
-    site_url = os.getenv("SHOTGUN_SITE_URL")
-    if not site_url:
-        raise EnvironmentError("SHOTGUN_SITE_URL not set, cannot get SG instance.")
-    script_name = os.getenv("SHOTGUN_SCRIPT_NAME")
-    if not script_name:
-        raise EnvironmentError("SHOTGUN_SCRIPT_NAME not set, cannot get SG instance.")
-    api_key = os.getenv("SHOTGUN_API_KEY")
-    if not api_key:
-        raise EnvironmentError("SHOTGUN_API_KEY not set, cannot get SG instance.")
+    username = getpass.getuser()
+    site_url = get_credential_from_keyring_or_error('shotgun.api.url', username)
+    script_name = get_credential_from_keyring_or_error('shotgun.api.script_name', username)
+    api_key = get_credential_from_keyring_or_error('shotgun.api.api_key', username)
     sg = shotgun_api3.Shotgun(site_url, script_name=script_name, api_key=api_key)
     return sg
+
 
 def get_query_field_value(entity_type: str, field_name: str) -> str:
     sg = get_shotgun_instance()
