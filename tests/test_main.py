@@ -14,5 +14,5 @@ def test_get_query_field_value_average():
 
 def test_get_query_field_value_record_count():
     qf_value = shotgun_query_field_test.main.get_query_field_value('Sequence', 'sg_ip_versions', 40)
-    assert qf_value == 1
+    assert qf_value == 11
 

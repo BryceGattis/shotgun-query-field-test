@@ -1,7 +1,7 @@
 import functools
 import getpass
 import pprint
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Union
 
 import shotgun_api3
 
@@ -27,7 +27,9 @@ def get_query_field_value(entity_type: str, field_name: str, entity_id: int) -> 
         raise ValueError(f"Unable to find field: {field_name} on entity type: {entity_type}")
     properties = schema[field_name]['properties']
     filters = properties['query']['value']['filters']
-    converted_filters = _convert_query_filters_to_queryable_list(filters, entity_id)
+    converted_filters = _convert_query_filters_to_queryable_format(filters, entity_id)
+    converted_filters = [converted_filters]
+    pprint.pprint(converted_filters)
     query_entity_type = properties['query']['value']['entity_type']
     query_function_for_summary_type = _get_query_function_for_summary_type(properties['summary_default']['value'])
     query_field_value = query_function_for_summary_type(
@@ -39,8 +41,8 @@ def get_query_field_value(entity_type: str, field_name: str, entity_id: int) -> 
     return query_field_value
 
 
-def _convert_query_filters_to_queryable_list(filters: Dict[str, Any], entity_id: int) -> List[Union[List[str], Dict[str, Any]]]:
-    queryable_list = []
+def _convert_query_filters_to_queryable_format(filters: Dict[str, Any],
+                                               entity_id: int) -> Union[List[str], Dict[str, Any]]:
     logical_operator = filters.get('logical_operator')
     is_complex_filter = True if logical_operator else False
     if is_complex_filter:
@@ -48,14 +50,13 @@ def _convert_query_filters_to_queryable_list(filters: Dict[str, Any], entity_id:
         child_filters = filters['conditions']
         converted_filters = []
         for child_filter in child_filters:
-            converted_filter = _convert_query_filters_to_queryable_list(child_filter, entity_id)
+            converted_filter = _convert_query_filters_to_queryable_format(child_filter, entity_id)
             converted_filters.append(converted_filter)
         queryable_filter = {
             "filter_operator": filter_operator,
             "filters": converted_filters
         }
-        queryable_list.append(queryable_filter)
-        return queryable_list
+        return queryable_filter
     # This is not a complex filter.
     is_filter_active = filters['active']
     if not is_filter_active:
@@ -89,10 +90,19 @@ def _convert_current_entity_values_to_passed_id(values: List[Dict[str, str]], en
 def _get_query_function_for_summary_type(summary_type: str) -> Callable[[str, List, str, str], Any]:
     if summary_type == "average":
         return _get_average_for_field
+    elif summary_type == "record_count":
+        return _get_record_count_for_field
 
 
 def _get_average_for_field(entity_type: str, filters: List[Union[List[str], Dict[str, Any]]],
                            field: str, summary_type: str) -> int:
+    sg = get_shotgun_instance()
+    summary = sg.summarize(entity_type, filters, [{"field": field, "type": summary_type}])
+    return int(summary['summaries'][field])
+
+
+def _get_record_count_for_field(entity_type: str, filters: List[Union[List[str], Dict[str, Any]]],
+                                field: str, summary_type: str) -> int:
     sg = get_shotgun_instance()
     summary = sg.summarize(entity_type, filters, [{"field": field, "type": summary_type}])
     return int(summary['summaries'][field])
