@@ -1,7 +1,7 @@
 import functools
 import getpass
 import pprint
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 import shotgun_api3
 
@@ -28,7 +28,15 @@ def get_query_field_value(entity_type: str, field_name: str, entity_id: int) -> 
     properties = schema[field_name]['properties']
     filters = properties['query']['value']['filters']
     converted_filters = _convert_query_filters_to_queryable_list(filters, entity_id)
-    return converted_filters
+    query_entity_type = properties['query']['value']['entity_type']
+    query_function_for_summary_type = _get_query_function_for_summary_type(properties['summary_default']['value'])
+    query_field_value = query_function_for_summary_type(
+        query_entity_type,
+        converted_filters,
+        properties['summary_field']['value'],
+        properties['summary_default']['value']
+    )
+    return query_field_value
 
 
 def _convert_query_filters_to_queryable_list(filters: Dict[str, Any], entity_id: int) -> List[Union[List[str], Dict[str, Any]]]:
@@ -76,3 +84,15 @@ def _convert_current_entity_values_to_passed_id(values: List[Dict[str, str]], en
         new_value = {'type': entity_type, 'id': entity_id}
         converted_list.append(new_value)
     return converted_list
+
+
+def _get_query_function_for_summary_type(summary_type: str) -> Callable[[str, List, str, str], Any]:
+    if summary_type == "average":
+        return _get_average_for_field
+
+
+def _get_average_for_field(entity_type: str, filters: List[Union[List[str], Dict[str, Any]]],
+                           field: str, summary_type: str) -> int:
+    sg = get_shotgun_instance()
+    summary = sg.summarize(entity_type, filters, [{"field": field, "type": summary_type}])
+    return int(summary['summaries'][field])

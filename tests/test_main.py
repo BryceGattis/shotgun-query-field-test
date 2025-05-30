@@ -9,7 +9,7 @@ def test_sg_instance_created():
 
 def test_get_query_field_value_average():
     qf_value = shotgun_query_field_test.main.get_query_field_value('Sequence', 'sg_cut_duration', 40)
-    assert qf_value == 1
+    assert qf_value == 17
 
 
 def test_get_query_field_value_record_count():
