@@ -61,3 +61,24 @@ specified like so:
 ```commandline
 python -m pip install .[test]
 ```
+
+Then you can just run pytest like so:
+
+```
+pytest
+```
+
+## Future
+
+The following are some improvements that could be made to the repo if more time were spent on it:
+
+- Make tests reference a Mock DB whose state could be written in code and therefore tests would always pass. This
+is a tricky problem because the Mock DB schema could get out of date with the real DB and cause even more harm than
+it's worth.
+- Use Dataclasses to represent entities, so we're not passing around a bunch of black hole dictionaries everywhere, and
+can instead reference fields via dot syntax.
+- Could always use more thorough unit tests.
+- Since query field interaction is not supported by the Python API, and the overall data flow is not documented
+it's very likely that other combinations of query field settings are not yet supported.
+- Ideally query field interaction is just treated as an expansion to the existing Shotgun Python API, rather than
+something we have to rewrite support for like this.

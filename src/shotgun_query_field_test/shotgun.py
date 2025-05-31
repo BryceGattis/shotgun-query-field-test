@@ -74,16 +74,21 @@ def _convert_simple_query_filters_to_queryable_format(filters: Dict[str, Any],
         return []
     path = filters['path']
     relation = filters['relation']
-    # If this has "Current" in it then we need to instead filter by the ID we passed in.
     values = filters['values']
     converted_values = _convert_current_entity_values_to_passed_id(values, entity_id)
     return [path, relation, converted_values]
 
 
 def _convert_current_entity_values_to_passed_id(values: List[Dict[str, str]], entity_id: int) -> List[Dict[str, str]]:
+    """Convert entities that point to 'current' entity to instead point to the passed entity_id.
+
+    See https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Administrator_ar_data_management_ar_query_fields_html
+    for examples.
+    """
     converted_list = []
     for value in values:
         is_dict = isinstance(value, dict)
+        # If the value isn't a dict, then it must not be pointing to a 'current' entity, it's already a valid value.
         if not is_dict:
             converted_list.append(value)
             continue
