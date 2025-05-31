@@ -18,7 +18,8 @@ Otherwise, you will get an EnvironmentError when the program initially attempts 
 
 ### Running it
 
-To run the command to obtain the value of query fields and export an HTML table, run this command:
+To run the command to obtain the value of query fields and export an HTML table, install the package and run
+this command:
 
 ```commandline
 python -m shotgun_query_field_test.main --project_id 85
